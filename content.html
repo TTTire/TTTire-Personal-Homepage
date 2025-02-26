@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTTire - Content</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #000;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .back-button {
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+        }
+
+        .section-container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            margin-bottom: 30px;
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+        }
+
+        .scroll-container {
+            position: relative;
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+            padding: 20px 0;
+        }
+
+        .article-grid {
+            display: flex;
+            gap: 20px;
+            padding: 0 20px;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .article-track {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.5s ease;
+        }
+
+        .article-card {
+            flex: 0 0 calc(25% - 15px);
+            min-width: calc(25% - 15px);
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            background: #1a1a1a;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .article-card:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .scroll-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .scroll-button:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .scroll-left {
+            left: 10px;
+        }
+
+        .scroll-right {
+            right: 10px;
+        }
+
+        .article-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .article-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            color: #fff;
+        }
+
+        .article-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .article-desc {
+            font-size: 14px;
+            opacity: 0.8;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .article-list {
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .article-row {
+            display: grid;
+            grid-template-columns: 1fr 150px 150px;  /* 固定列宽比例 */
+            gap: 20px;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            align-items: center;
+        }
+
+        .article-row.table-header {
+            display: grid !important;  /* 确保表头始终显示 */
+            font-weight: bold;
+            color: rgba(255,255,255,0.6);
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .article-row:not(.table-header) {
+            display: none;  /* 默认隐藏所有文章行 */
+        }
+
+        .article-row.visible {
+            display: grid !important;  /* 显示当前页的文章 */
+        }
+
+        /* 文章标题样式 */
+        .article-row a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .article-row a:hover {
+            color: #00ffff;
+        }
+
+        /* 阅读量和时间列样式 */
+        .article-row > div:nth-child(2),
+        .article-row > div:nth-child(3) {
+            text-align: center;
+        }
+
+        /* 分页样式优化 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .pagination button {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 40px;
+        }
+
+        .pagination button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .pagination button.active {
+            background: #00ffff;
+            color: #000;
+        }
+
+        /* 添加底部作者信息样式 */
+        .footer {
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            font-family: 'Orbitron', sans-serif;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Back</a>
+
+    <div class="section-container">
+        <h1 class="section-title">精选文章</h1>
+    </div>
+    
+    <div class="scroll-container">
+        <button class="scroll-button scroll-left">←</button>
+        <div class="article-grid">
+            <div class="article-track">
+                <div class="article-card">
+                    <a href="https://mp.weixin.qq.com/s/kzdJcamAJMDKeXvoIE05mQ" class="article-link" target="_blank">
+                        <img src="img\1.png" alt="0卡顿免费使用 DeepSeek 的在线渠道，亲测整理">
+                        <div class="article-info">
+                            <div class="article-title">0卡顿免费使用 DeepSeek 的在线...</div>
+                            <div class="article-desc">没想到 DeepSeek 官方服务火爆到需要「曲线救国」！...</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="article-card">
+                    <a href="https://mp.weixin.qq.com/s/kvBjKygMv_vtZyeWT67ijQ" class="article-link" target="_blank">
+                        <img src="img\2.png" alt="谷歌十诫背后的生存法则：你以为你在拼命，其实你只是在瞎卷">
+                        <div class="article-info">
+                            <div class="article-title">谷歌十诫背后的生存法则：你以为你在拼命，其实你...</div>
+                            <div class="article-desc">真正的高手，都在用这 10 条铁律对抗时代的焦虑...</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="article-card">
+                    <a href="article3.html" class="article-link" target="_blank">
+                        <img src="img\3.png" alt="你拼命塞给孩子的不是上进心，是亲手喂下的慢性毒药">
+                        <div class="article-info">
+                            <div class="article-title">你拼命塞给孩子的不是"上进心"，是亲手喂下的慢性毒药</div>
+                            <div class="article-desc">1. 当教育沦为资源军备竞赛，你输掉的不仅是钱包...</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="article-card">
+                    <a href="article4.html" class="article-link" target="_blank">
+                        <img src="img\4.png" alt="你的钱包，才是房价涨跌的终极密码">
+                        <div class="article-info">
+                            <div class="article-title">你的钱包，才是房价涨跌的终极密码</div>
+                            <div class="article-desc">上个月在读者群里聊到"化债"时，有位朋友问了个很妙的问题："以前每次地方上搞债务重组...</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="article-card">
+                    <a href="article7.html" class="article-link" target="_blank">
+                        <img src="img\5.png" alt="颠覆性思维：用「第一性原理」撕碎所有伪命题">
+                        <div class="article-info">
+                            <div class="article-title">颠覆性思维：用「第一性原理」撕碎所有伪命题</div>
+                            <div class="article-desc">你有没有发现？我们正活在一个 "二手答案" 泛滥的时代。...</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <button class="scroll-button scroll-right">→</button>
+    </div>
+
+    <div class="section-container">
+        <h1 class="section-title">所有文章</h1>
+    </div>
+    
+    <div class="article-list">
+        <div class="article-row table-header">
+            <div>标题</div>
+            <div>全网阅读量</div>
+            <div>发布时间</div>
+        </div>
+        
+        <!-- 第一页文章 -->
+        <div class="article-row" data-page="1">
+            <div><a href="https://mp.weixin.qq.com/s/kzdJcamAJMDKeXvoIE05mQ" target="_blank">0卡顿免费使用 DeepSeek 的在线渠道，亲测整理</a></div>
+            <div>129.3w</div>
+            <div>2024-01-31</div>
+        </div>
+        <div class="article-row" data-page="1">
+            <div><a href="https://mp.weixin.qq.com/s/kvBjKygMv_vtZyeWT67ijQ" target="_blank">谷歌十诫背后的生存法则：你以为你在拼命，其实你只是在瞎卷</a></div>
+            <div>98.7w</div>
+            <div>2024-01-28</div>
+        </div>
+        <div class="article-row" data-page="1">
+            <div><a href="https://mp.weixin.qq.com/s/example3" target="_blank">你拼命塞给孩子的不是"上进心"，是亲手喂下的慢性毒药</a></div>
+            <div>87.5w</div>
+            <div>2024-01-25</div>
+        </div>
+        <div class="article-row" data-page="1">
+            <div><a href="https://mp.weixin.qq.com/s/example4" target="_blank">你的钱包，才是房价涨跌的终极密码</a></div>
+            <div>76.2w</div>
+            <div>2024-01-22</div>
+        </div>
+        <div class="article-row" data-page="1">
+            <div><a href="https://mp.weixin.qq.com/s/example5" target="_blank">颠覆性思维：用「第一性原理」撕碎所有伪命题</a></div>
+            <div>65.8w</div>
+            <div>2024-01-19</div>
+        </div>
+        <!-- 第二页文章 -->
+        <div class="article-row" data-page="2">
+            <div><a href="https://mp.weixin.qq.com/s/BtPlKtBa_vS5aNBza2v7OA" target="_blank">凌晨 3 点，你朋友圈的定位暴露了你的层次
+            </a></div>
+            <div>58.4w</div>
+            <div>2024-01-16</div>
+        </div>
+        <div class="article-row" data-page="2">
+            <div><a href="https://mp.weixin.qq.com/s/OpbNhxwvrJCzKGaA7Ure8A" target="_blank">有一种累，叫想太多：给敏感者的5个“心理断舍离”法则</a></div>
+            <div>52.1w</div>
+            <div>2024-01-13</div>
+        </div>
+        <div class="article-row" data-page="2">
+            <div><a href="https://mp.weixin.qq.com/s/0QXJ5ktRYG2Brpl0S4DuXQ" target="_blank">中年失业与职业转型：如何在混沌中找到自己的方向
+            </a></div>
+            <div>47.9w</div>
+            <div>2024-01-10</div>
+        </div>
+        <div class="article-row" data-page="2">
+            <div><a href="https://mp.weixin.qq.com/s/Qg9ZhhOPSdMQzYaXpvLejg" target="_blank">AI与人类：谁才是真正的“大师”？</a></div>
+            <div>43.2w</div>
+            <div>2024-01-07</div>
+        </div>
+        <div class="article-row" data-page="2">
+            <div><a href="https://mp.weixin.qq.com/s/a1mJwNL6x834pHTYQtwOmA" target="_blank">你准备好了吗？在人生的舞台上，不只是你来演主角
+            </a></div>
+            <div>38.6w</div>
+            <div>2024-01-04</div>
+        </div>
+    </div>
+
+    <div class="pagination">
+        <button onclick="changePage(1)" class="active">1</button>
+        <button onclick="changePage(2)">2</button>
+    </div>
+
+    <div class="footer">
+        可添加作者V: S19984160108
+    </div>
+
+    <script>
+        function changePage(pageNum) {
+            // 隐藏所有文章行
+            document.querySelectorAll('.article-row:not(.table-header)').forEach(row => {
+                row.classList.remove('visible');
+            });
+            
+            // 显示当前页的文章
+            document.querySelectorAll(`.article-row[data-page="${pageNum}"]`).forEach(row => {
+                row.classList.add('visible');
+            });
+            
+            // 更新分页按钮状态
+            document.querySelectorAll('.pagination button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.pagination button:nth-child(${pageNum})`).classList.add('active');
+        }
+
+        // 初始化显示第一页
+        document.addEventListener('DOMContentLoaded', () => {
+            changePage(1);
+        });
+        
+    </script>
+</body>
+</html> 
